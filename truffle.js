@@ -1,10 +1,15 @@
 module.exports = {
   networks: {
     development: {
-      host: 'localhost',
+      host: "localhost",
       port: 8545,
-      network_id: '*' // Match any network id
-    }
+      network_id: "*", // Match any network id
+    },
+  },
+  compilers: {
+    solc: {
+      version: "^0.8.4",
+    },
   },
   solc: {
     // Turns on the Solidity optimizer. For development the optimizer's
@@ -15,7 +20,7 @@ module.exports = {
     // https://github.com/trufflesuite/truffle/releases/tag/v4.0.0
     optimizer: {
       enabled: true,
-      runs: 200
-    }
-  }
-}
+      runs: 200,
+    },
+  },
+};
