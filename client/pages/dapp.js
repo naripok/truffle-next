@@ -1,56 +1,52 @@
-import React from 'react'
-import Link from 'next/link'
-import Web3Container from '../lib/Web3Container'
+import { useState } from "react";
+import Link from "next/link";
+import Web3Container from "../lib/Web3Container";
 
-class Dapp extends React.Component {
-  state = {
+const Dapp = ({ accounts, contract, web3 }) => {
+  const [state, setState] = useState({
     balance: undefined,
-    ethBalance: undefined
+    ethBalance: undefined,
+  });
+
+  const storeValue = async () => {
+    await contract.methods.set(5).send({ from: accounts[0] });
+    alert("Stored 5 into account");
   };
 
-  storeValue = async () => {
-    const { accounts, contract } = this.props
-    await contract.methods.set(5).send({ from: accounts[0] })
-    alert('Stored 5 into account')
+  const getValue = async () => {
+    const response = await contract.methods.get().call({ from: accounts[0] });
+    setState({ balance: response });
   };
 
-  getValue = async () => {
-    const { accounts, contract } = this.props
-    const response = await contract.methods.get().call({ from: accounts[0] })
-    this.setState({ balance: response })
+  const getEthBalance = async () => {
+    const balanceInWei = await web3.eth.getBalance(accounts[0]);
+    setState({ ethBalance: balanceInWei / 1e18 });
   };
 
-  getEthBalance = async () => {
-    const { web3, accounts } = this.props
-    const balanceInWei = await web3.eth.getBalance(accounts[0])
-    this.setState({ ethBalance: balanceInWei / 1e18 })
-  };
+  const { balance = "N/A", ethBalance = "N/A" } = state;
 
-  render () {
-    const { balance = 'N/A', ethBalance = 'N/A' } = this.state
-    return (
+  return (
+    <div>
+      <h1>My Dapp</h1>
+
+      <button onClick={storeValue}>Store 5 into account balance</button>
+      <button onClick={getValue}>Get account balance</button>
+      <button onClick={getEthBalance}>Get ether balance</button>
+      <div>Account Balance: {balance}</div>
+      <div>Ether Balance: {ethBalance}</div>
       <div>
-        <h1>My Dapp</h1>
-
-        <button onClick={this.storeValue}>Store 5 into account balance</button>
-        <button onClick={this.getValue}>Get account balance</button>
-        <button onClick={this.getEthBalance}>Get ether balance</button>
-        <div>Account Balance: {balance}</div>
-        <div>Ether Balance: {ethBalance}</div>
-        <div>
-          <Link href='/accounts'>
-            <a>My Accounts</a>
-          </Link>
-        </div>
-        <div>
-          <Link href='/'>
-            <a>Home</a>
-          </Link>
-        </div>
+        <Link href="/accounts">
+          <a>My Accounts</a>
+        </Link>
       </div>
-    )
-  }
-}
+      <div>
+        <Link href="/">
+          <a>Home</a>
+        </Link>
+      </div>
+    </div>
+  );
+};
 
 export default () => (
   <Web3Container
@@ -59,4 +55,4 @@ export default () => (
       <Dapp accounts={accounts} contract={contract} web3={web3} />
     )}
   />
-)
+);
